@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}后台管理{% endblock %} - 政企智能舆情分析报告生成智能体应用系统</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.9.8/css/layui.min.css">
+  <style>
+    .layui-layout-admin .layui-header { background-color: #0052cc; }
+    .layui-logo { color: #fff !important; font-weight: bold; }
+  </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">智能体应用系统</div>
+    <ul class="layui-nav layui-layout-left">
+      <li class="layui-nav-item"><a href="{{ url_for('main.index') }}">返回前台</a></li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <i class="layui-icon layui-icon-username"></i>
+          {{ current_user.username }}
+        </a>
+      </li>
+      <li class="layui-nav-item"><a href="{{ url_for('auth.logout') }}">退出</a></li>
+    </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+        <li class="layui-nav-item {% if request.endpoint == 'admin.index' %}layui-this{% endif %}">
+          <a href="{{ url_for('admin.index') }}">控制台</a>
+        </li>
+        <li class="layui-nav-item {% if request.endpoint == 'admin.users' %}layui-this{% endif %}">
+          <a href="{{ url_for('admin.users') }}">用户管理</a>
+        </li>
+        <li class="layui-nav-item {% if request.endpoint == 'admin.settings' %}layui-this{% endif %}">
+          <a href="{{ url_for('admin.settings') }}">系统设置</a>
+        </li>
+        <li class="layui-nav-item {% if request.endpoint and 'crawl' in request.endpoint %}layui-this{% endif %}">
+          <a href="{{ url_for('crawl.index') }}">舆情采集</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="layui-body" style="padding: 15px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="layui-alert layui-bg-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    {% block content %}{% endblock %}
+  </div>
+  
+  <div class="layui-footer">
+    © 政企智能舆情分析报告生成智能体应用系统
+  </div>
+</div>
+<script src="https://cdn.staticfile.org/layui/2.9.8/layui.min.js"></script>
+<script>
+layui.use('element', function(){
+  var element = layui.element;
+});
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

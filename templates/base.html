@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GovInfoCheckSystemVI</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.9.8/css/layui.min.css" />
+  <style>
+    html, h2 { color: #ffffff; }
+    .layui-card, .layui-card-header, .layui-card-body, .layui-table, .layui-table-view { color: #333; }
+    .layui-table th, .layui-table td { color: #333; }
+  </style>
+</head>
+<body class="layui-container" style="padding-top:24px;">
+  <div class="layui-row">
+    <div class="layui-col-md12">
+      <h2>基础框架</h2>
+    </div>
+  </div>
+  {% block content %}{% endblock %}
+  <script src="https://cdn.staticfile.org/layui/2.9.8/layui.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

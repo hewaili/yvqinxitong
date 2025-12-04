@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+
+{% block title %}舆情数据采集{% endblock %}
+
+{% block content %}
+<div class="layui-container" style="margin-top: 20px;">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <h2>舆情数据采集</h2>
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form" action="" onsubmit="return false;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">关键词</label>
+                    <div class="layui-input-inline" style="width: 300px;">
+                        <input type="text" name="keyword" id="keyword" required lay-verify="required" placeholder="请输入采集关键词" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button class="layui-btn" lay-submit lay-filter="search" id="searchBtn">
+                            <i class="layui-icon layui-icon-search"></i> 开始采集
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <table id="newsTable" lay-filter="newsTable"></table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+layui.use(['table', 'form', 'layer', 'jquery'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    var $ = layui.jquery;
+
+    // 初始化表格
+    var tableIns = table.render({
+        elem: '#newsTable',
+        cols: [[
+            {field: 'title', title: '标题', width: 300, templet: function(d){
+                return '<a href="'+ d.url +'" target="_blank" class="layui-table-link">'+ d.title +'</a>';
+            }},
+            {field: 'source', title: '来源', width: 120},
+            {field: 'summary', title: '摘要'},
+            {field: 'cover', title: '封面', width: 100, templet: function(d){
+                if(d.cover){
+                    return '<img src="'+ d.cover +'" style="height: 30px;">';
+                }
+                return '无';
+            }}
+        ]],
+        data: [],
+        page: true,
+        limit: 10,
+        text: {
+            none: '暂无数据'
+        }
+    });
+
+    // 监听提交
+    form.on('submit(search)', function(data){
+        var keyword = data.field.keyword;
+        var loading = layer.load(1); // 开启loading
+
+        $('#searchBtn').addClass('layui-btn-disabled').attr('disabled', true);
+
+        $.ajax({
+            url: '/crawl/api/search',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({keyword: keyword}),
+            success: function(res){
+                layer.close(loading);
+                $('#searchBtn').removeClass('layui-btn-disabled').attr('disabled', false);
+
+                if(res.code === 0){
+                    // 重载表格数据
+                    tableIns.reload({
+                        data: res.data
+                    });
+                    layer.msg('采集完成，共找到 ' + res.count + ' 条相关内容');
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            },
+            error: function(){
+                layer.close(loading);
+                $('#searchBtn').removeClass('layui-btn-disabled').attr('disabled', false);
+                layer.msg('采集请求失败', {icon: 2});
+            }
+        });
+        return false;
+    });
+});
+</script>
+{% endblock %}
